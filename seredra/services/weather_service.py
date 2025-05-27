@@ -49,14 +49,14 @@ def get_weather(session: Session, city_query: CityQuery) -> WeatherReport:
 				"humidity": cached.humidity,
 			},
 			conditions=[{"main": cached.weather_main, "description": cached.weather_desc}],
-			wind={"speed": cached.wind_speed, "degree": cached.wind_deg},
+			wind={"speed": cached.wind_speed, "deg": cached.wind_deg},
 			timestamp=cached.timestamp,
 		)
 
 	log_info(f"Fetching fresh weather for {city} from API")
-	raw_data = fetch_weather(city, unit)  # must be sync
+	raw_data = fetch_weather(city, unit)
 	processed = process_raw_api_data(raw_data)
-	weather_report = WeatherReport.parse_obj(processed)
+	weather_report = WeatherReport.model_validate(processed)
 
 	save_weather_to_db(session, weather_report)
 	return weather_report
